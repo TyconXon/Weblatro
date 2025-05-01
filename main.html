@@ -39,7 +39,7 @@
 
 		</div>
 
-		<div id="game-box">
+		<div id="game-box" hidden>
 			<div id="card-table">
 				
 				<button id="deal">DEAL</button>
@@ -58,13 +58,34 @@
 			<div id="lower-shelf"></div>
 
 		</div>
-		<div id="controls">
+		<div id="controls" hidden >
 			<button id="play">Play</button>
 			<button id="sort" onclick="sortHand()">Sort</button>
 			<button id="discard">Discard</button>
 			<span id="deck-count"> 52/52 </span>
 		</div>
-		<div id="ante-box">
+
+		<div id="ante-box" >
+			<div id="blind-selection">
+				<div id="blind-0" class="blind">
+					<button enter > Select </button>
+					<h2>Small Blind</h2>
+					<h3>Score atleast: <m>800</m><small>Reward: <u>$$$+</u></small> </h3>
+					<button skip >  Skip  </button>
+				</div>
+				<div id="blind-1" class="blind">
+					<button enter > Select </button>
+					<h2>Big Blind</h2>
+					<h3>Score atleast: <m>1,200</m><small>Reward: <u>$$$$+</u></small></h3>
+					
+					<button skip >  Skip  </button>
+				</div>
+				<div id="blind-2" class="blind">
+					<button enter> Select </button>
+					<h2>Boss Blind</h2>
+					<h3>Score atleast: <m>1,600</m><small>Reward: <u>$$$$$+</u></small></h3>
+				</div>
+			</div>
 		</div>
 
 		<dialog id="mydiv">
@@ -99,6 +120,8 @@
 			<input type="checkbox" id="bigCards" name="bigCards">
   			<label for="bigCards"> Bigger Cards (Zeke Mode)</label><br>
 
+			<input type="checkbox" id="noShadows" name="noShadows">
+  			<label for="noShadows"> Disable Text Shadows</label><br>
 
 			<input type="checkbox" id="altEditions" name="altEditions">
   			<label for="altEditions"> Alternate edition visuals</label><br>
@@ -106,14 +129,20 @@
 			<input type="checkbox" id="noSound" name="noSound">
   			<label for="noSound"> Disable sounds (May help with performance)</label><br>
 
+			<input type="checkbox" id="noPackShader" name="noPackShader">
+  			<label for="noPackShader"> Disable booster pack shaders</label><br>
+
 			<button onclick='$("*").on("mousemove", hoverCard);$("*").on("mouseout", noHoverCard);'> Don't click me </button> <br>
 		</div>
 
 		<dialog id="boosterPackWindow">
 			<h2 id="boosterPackText">Choose 1</h2>
+			<button id='skipPack' style="z-index:999;" dismiss="boosterPackWindow">Skip</button>
+			
 			<p id="boosterPack" style="display:relative;">
 			</p>
-			<button id='skipPack' style="z-index:999;" dismiss="boosterPackWindow">Skip</button>
+
+			
 		</dialog>
 
 		<div popover id="pokerHandsWindow">
@@ -151,7 +180,11 @@
 				</ul>
 			</p>
 		</div>
+		<div id="peppino" hidden>
+			<img src="img/live peppino reaction.gif"><br>
+			<marquee cheatsinfo>SV_CHEATS ENABLED! Remember to push with it <img style="height: 1lh;" src="https://upload.wikimedia.org/wikipedia/commons/5/53/Off-logo.png">! T: Finish blind, Y: Minimum 1, U: Money, I: Give Joker, P: Open tarot pack</marquee><br>
 
+		</div>
 		<button id="popoverButton" hidden popovertarget="mydiv">You shouldn't see me.</button>
 		<!-- <button id="boosterPackWindowOpen" hidden popovertarget="boosterPackWindow">You shouldn't see me.</button> -->
 		  
@@ -168,7 +201,6 @@
 		<script src="deckType.js"></script>
 		<script src="cards.js"></script>
 		<script src="Balatro.js"></script>
-
 
 
 		

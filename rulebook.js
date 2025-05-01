@@ -199,6 +199,21 @@ RULEBOOK = {
 					[0.186, 0.137, 0.145]
 				]
 			},
+			{
+				name : "The Manacle",
+				description: "-1 Hand Size",
+				scaling : 2,
+				payout : 5,
+				hooks : [],
+				minimumAnte : 1,
+				elementId : "NoneYet",
+				//Special blind.
+				colors : [
+					[0.171, 0.167, 0.111],
+					[0.0, 0.12, 0.106],
+					[0.186, 0.137, 0.145]
+				]
+			},
 			// {
 			// 	name : "The Wheel",
 			// 	description: "1 in 7 cards get drawn face down",
@@ -239,6 +254,8 @@ RULEBOOK = {
 				alert("err in building blind")
 				break;
 		}
+		returningBlind.tag = randomOf(RULEBOOK.tags, (a)=>{return a.description == "temp"})
+		// alert(returningBlind.tag.description);
 		returningBlind.minimum = this.anteScaling[ante] * returningBlind.scaling;
 		return returningBlind;
 
@@ -1255,27 +1272,27 @@ RULEBOOK = {
 		},
 		standardTag : {
 			name : "Standard Tag",
-			description : "temp",
+			description : "Gives a free Mega Standard Pack",
 			hookOnto : "onAcquire",
-			onAcquire : (tagInformation)=>{},
+			onAcquire : (tagInformation)=>{buyPack(RULEBOOK.boosters.standard[7]);},
 		},
 		charmTag : {
 			name : "Charm Tag",
-			description : "temp",
+			description : "Gives a free Mega Arcana Pack",
 			hookOnto : "onAcquire",
-			onAcquire : (tagInformation)=>{},
+			onAcquire : (tagInformation)=>{buyPack();},
 		},
 		meteorTag : {
 			name : "Meteor Tag",
-			description : "temp",
+			description : "Gives a free Mega Celestial Pack",
 			hookOnto : "onAcquire",
-			onAcquire : (tagInformation)=>{},
+			onAcquire : (tagInformation)=>{buyPack(RULEBOOK.boosters.celestial[7]);},
 		},
 		buffoonTag : {
 			name : "Buffoon Tag",
-			description : "temp",
+			description : "Gives a free Mega Buffoon Pack",
 			hookOnto : "onAcquire",
-			onAcquire : (tagInformation)=>{},
+			onAcquire : (tagInformation)=>{buyPack(RULEBOOK.boosters.buffoon[3])},
 		},
 		handyTag : {
 			name : "Handy Tag",
@@ -1309,9 +1326,11 @@ RULEBOOK = {
 		},
 		juggleTag : {
 			name : "Juggle Tag",
-			description : "temp",
+			description : "+3 hand size next round",
 			hookOnto : "onBlind",
-			onBlind : (tagInformation)=>{},
+			onBlind : (tagInformation)=>{
+				game.player.tempHandSize += 3;
+			},
 		},
 		diceTag : {
 			name : "D6 Tag",
@@ -1347,159 +1366,220 @@ RULEBOOK = {
 
 	consumables : {
 		tarot : {
-			theFool : {
-				name : "The Fool",
-				description : "Temporary",
-				id : "00",
-				selectionMaximum : -1,
-				use : (tarotInformation)=>{},
-			},
+			// theFool : {
+			// 	name : "The Fool",
+			// 	description : "Temporary",
+			// 	id : "00",
+			// 	selectionMaximum : -1,
+			// 	use : (tarotInformation)=>{},
+			// },
 			theMagician : {
 				name : "The Magician",
-				description : "Temporary",
+				description : "Enhances up to 2 cards into lucky cards.",
 				id : "01",
 				selectionMaximum : 2,
-				use : (tarotInformation)=>{},
+				use : (tarotInformation)=>{
+					tarotInformation.selected.forEach(card => {
+						card.enhancement = RULEBOOK.enhancements.lucky;
+						card.showCard();
+					});
+				},
 			},
-			theHighPriestess : {
-				name : "The High Priestess",
-				description : "Temporary",
-				id : "02",
-				selectionMaximum : -1,
-				use : (tarotInformation)=>{},
-			},
+			// theHighPriestess : {
+			// 	name : "The High Priestess",
+			// 	description : "Temporary",
+			// 	id : "02",
+			// 	selectionMaximum : -1,
+			// 	use : (tarotInformation)=>{},
+			// },
 			theEmpress : {
 				name : "The Empress",
-				description : "Temporary",
+				description : "Enhances up to 2 cards into Mult cards",
 				id : "03",
 				selectionMaximum : 2,
-				use : (tarotInformation)=>{},
+				use : (tarotInformation)=>{
+					tarotInformation.selected.forEach(card => {
+						card.enhancement = RULEBOOK.enhancements.mult;
+						card.showCard();
+					});
+				},
 			},
-			theEmperor : {
-				name : "The Emperor",
-				description : "Temporary",
-				id : "04",
-				selectionMaximum : -1,
-				use : (tarotInformation)=>{},
-			},
+			// theEmperor : {
+			// 	name : "The Emperor",
+			// 	description : "Temporary",
+			// 	id : "04",
+			// 	selectionMaximum : -1,
+			// 	use : (tarotInformation)=>{},
+			// },
 			theHierophant : {
-				name : "The Fool",
-				description : "Gives 2 soul hearts!",
+				name : "The Hierophant",
+				description : "Enhances up to 2 cards into Bonus cards.",
 				id : "05",
-				selectionMaximum : -1,
-				use : (tarotInformation)=>{},
+				selectionMaximum : 2,
+				use : (tarotInformation)=>{
+					tarotInformation.selected.forEach(card => {
+						card.enhancement = RULEBOOK.enhancements.bonus;
+						card.showCard();
+					});
+				},
 			},
-			theLovers : {
-				name : "The Lovers",
-				description : "Temporary",
-				id : "06",
-				selectionMaximum : 1,
-				use : (tarotInformation)=>{},
-			},
+			// theLovers : {
+			// 	name : "The Lovers",
+			// 	description : "Temporary",
+			// 	id : "06",
+			// 	selectionMaximum : 1,
+			// 	use : (tarotInformation)=>{},
+			// },
 			theChariot : {
 				name : "The Chariot",
-				description : "Temporary",
+				description : "Enhances 1 card into a Steel card",
 				id : "07",
 				selectionMaximum : 1,
-				use : (tarotInformation)=>{},
+				use : (tarotInformation)=>{
+					tarotInformation.selected.forEach(card => {
+						card.enhancement = RULEBOOK.enhancements.steel;
+						card.showCard();
+					});
+				},
 			},
 			theJustice : {
 				name : "Justice",
-				description : "Temporary",
-				id : "00",
+				description : "Enhances 1 card into glass",
+				id : "08",
 				selectionMaximum : 1,
-				use : (tarotInformation)=>{},
+				use : (tarotInformation)=>{
+					tarotInformation.selected.forEach(card => {
+						card.enhancement = RULEBOOK.enhancements.glass;
+						card.showCard();
+					});
+				},
 			},
 			theHermit : {
 				name : "The Hermit",
-				description : "Temporary",
+				description : "Doubles your money",
 				id : "09",
 				selectionMaximum : -1,
 				use : (tarotInformation)=>{game.player.money *= 2;},
 			},
-			theWheelOfFortune : {
-				name : "The Wheel Of Fortune",
-				description : "Temporary",
-				id : "10",
-				selectionMaximum : -1,
-				use : (tarotInformation)=>{},
-			},
+			// theWheelOfFortune : {
+			// 	name : "The Wheel Of Fortune",
+			// 	description : "WHEEL OF FORTUNE!!",
+			// 	id : "10",
+			// 	selectionMaximum : -1,
+			// 	use : (tarotInformation)=>{},
+			// },
 			theStrength : {
 				name : "Strength",
-				description : "Temporary",
+				description : "Increases up to 2 card's rank.",
 				id : "11",
 				selectionMaximum : 2,
-				use : (tarotInformation)=>{},
+				use : (tarotInformation)=>{
+					tarotInformation.selected.forEach(card => {
+						card.rank++;
+						if(card.rank == 14) card.rank = 1
+						card.showCard();
+					});
+				},
 			},
-			theHangedMan : {
-				name : "The Hanged Man",
-				description : "Temporary",
-				id : "12",
-				selectionMaximum : 2,
-				use : (tarotInformation)=>{},
-			},
-			theDeath : {
-				name : "The Death",
-				description : "Temporary",
-				id : "03",
-				selectionMaximum : 2,
-				use : (tarotInformation)=>{},
-			},
-			theTemperance : {
-				name : "Temperance",
-				description : "Temporary",
-				id : "14",
-				selectionMaximum : -1,
-				use : (tarotInformation)=>{},
-			},
+			// theHangedMan : {
+			// 	name : "The Hanged Man",
+			// 	description : "Temporary",
+			// 	id : "12",
+			// 	selectionMaximum : 2,
+			// 	use : (tarotInformation)=>{
+
+			// 	},
+			// },
+			// theDeath : {
+			// 	name : "Death",
+			// 	description : "Transforms your first selected card into your second selected card.",
+			// 	id : "13",
+			// 	selectionMaximum : 2,
+			// 	use : (tarotInformation)=>{
+			// 		tarotInformation.selected[0] = tarotInformation.selected[1];
+			// 		tarotInformation.selected[0].showCard();
+			// 	},
+			// },
+			// theTemperance : {
+			// 	name : "Temperance",
+			// 	description : "Temporary",
+			// 	id : "14",
+			// 	selectionMaximum : -1,
+			// 	use : (tarotInformation)=>{},
+			// },
 			theDevil : {
 				name : "The Devil",
-				description : "Temporary",
+				description : "Enhances 1 card into Gold",
 				id : "15",
 				selectionMaximum : 1,
-				use : (tarotInformation)=>{},
+				use : (tarotInformation)=>{
+					tarotInformation.selected.forEach(card => {
+						card.enhancement = RULEBOOK.enhancements.gold;
+						card.showCard();
+					});
+				},
 			},
-			theTower : {
-				name : "The Tower",
-				description : "Temporary",
-				id : "16",
-				selectionMaximum : 1,
-				use : (tarotInformation)=>{},
-			},
+			// theTower : {
+			// 	name : "The Tower",
+			// 	description : "Temporary",
+			// 	id : "16",
+			// 	selectionMaximum : 1,
+			// 	use : (tarotInformation)=>{},
+			// },
 			theStar : {
 				name : "The Star",
-				description : "Temporary",
+				description : "Changes up to 3 card's suit into diamonds",
 				id : "17",
 				selectionMaximum : 3,
-				use : (tarotInformation)=>{},
+				use : (tarotInformation)=>{
+					tarotInformation.selected.forEach(card => {
+						card.suit = "d";
+						card.showCard();
+					});
+				},
 			},
 			theMoon : {
 				name : "The Moon",
-				description : "Temporary",
+				description : "Changes up to 3 card's suit into clubs",
 				id : "18",
 				selectionMaximum : 3,
-				use : (tarotInformation)=>{},
+				use : (tarotInformation)=>{
+					tarotInformation.selected.forEach(card => {
+						card.suit = "c";
+						card.showCard();
+					});
+				},
 			},
 			theSun : {
 				name : "The Sun",
-				description : "Temporary",
+				description : "Changes up to 3 card's suit into hearts",
 				id : "19",
 				selectionMaximum : 3,
-				use : (tarotInformation)=>{},
+				use : (tarotInformation)=>{
+					tarotInformation.selected.forEach(card => {
+						card.suit = "h";
+						card.showCard();
+					});
+				},
 			},
-			theJudgement : {
-				name : "Judgement",
-				description : "Temporary",
-				id : "20",
-				selectionMaximum : -1,
-				use : (tarotInformation)=>{},
-			},
+			// theJudgement : {
+			// 	name : "Judgement",
+			// 	description : "Temporary",
+			// 	id : "20",
+			// 	selectionMaximum : -1,
+			// 	use : (tarotInformation)=>{},
+			// },
 			theWorld : {
 				name : "The World",
-				description : "Temporary",
+				description : "Changes up to 3 card's suit into spades",
 				id : "21",
 				selectionMaximum : 3,
-				use : (tarotInformation)=>{},
+				use : (tarotInformation)=>{
+					tarotInformation.selected.forEach(card => {
+						card.suit = "s";
+						card.showCard();
+					});
+				},
 			},
 		},
 		// planet : {

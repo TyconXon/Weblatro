@@ -105,7 +105,7 @@ var cards = (function() {
 	Card.prototype = {
 		init: function(suit, rank, table) {
 			this.shortName = suit + rank;
-			this.suit = suit;
+			this._suit = suit;
 			this.rank = rank;
 			this.name = suit.toUpperCase() + rank;
 			this.faceUp = false;
@@ -132,9 +132,23 @@ var cards = (function() {
 
 			$(this.el)[0].onmousemove = hoverCard;
 			$(this.el)[0].onmouseout = noHoverCard;
+
+			//define last
+			this.suit = suit;
 			
 			this.showCard();
 			this.moveToFront();
+		},
+
+		set suit(param){
+			this._suit = param;
+			this.shortName = param + this.rank;
+			this.name = param.toUpperCase() + this.rank;
+			this.niceName = param.replaceAll('h','♥').replaceAll('c','♣').replaceAll('d','♦').replaceAll('s','♠') + this.rank;
+			this.showCard()
+		},
+		get suit(){
+			return this._suit;
 		},
 
 		toString: function() {
@@ -399,7 +413,7 @@ var cards = (function() {
 			return 'Deck';
 		},
 
-		deal: function(count, hands, speed, callback, blind) {
+		deal: function(count, hands, speed, callback, blind = {name: "", inPlay: false}, perCard = ()=>{}) {
 			var me = this;
 			var i = 0;
 			if(blind.name == "The Serpent" && blind.inPlay){
@@ -422,6 +436,7 @@ var cards = (function() {
 					cardSound.playbackRate = 0.85 + (i * 0.05);
 					cardSound.play();
 				}
+				perCard(me.topCard())
 				// if (blind && blind.drawCardHook){
 				//   blind.drawCardHook(me.topCard());
 				// }

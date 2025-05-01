@@ -124,6 +124,24 @@ ssl.shaders.duotone = `<svg viewBox="0 0 266 400">
     </filter>
 </svg>`;
 
+ssl.shaders.duotoneReal = `<svg viewBox="0 0 266 400">
+    <filter id="duotoneReal">
+        <!-- Grab the SourceGraphic (implicit) and convert it to grayscale -->
+        <feColorMatrix type="matrix" values=".33 .33 .33 0 0
+              .33 .33 .33 0 0
+              .33 .33 .33 0 0
+              0 0 0 1 0">
+        </feColorMatrix>
+
+        <!-- Map the grayscale result to the gradient map provided in tableValues -->
+        <feComponentTransfer color-interpolation-filters="sRGB">
+            <feFuncR type="table" tableValues="-0.25  .9"></feFuncR>
+            <feFuncG type="table" tableValues="-1.0  .1"></feFuncG>
+            <feFuncB type="table" tableValues="-0.25  .9"></feFuncB>
+        </feComponentTransfer>
+    </filter>
+</svg>`
+
 ssl.shaders.paint = `<svg width="450" height="300" viewBox="0 0 450 300">
     <filter id="erode">
       <feMorphology operator="erode" radius="1"></feMorphology>
@@ -146,26 +164,7 @@ ssl.shaders.negative = `<svg><filter id="negative" color-interpolation-filters="
 </filter>
 </svg>`;
 
-ssl.shaders.polychrome = `<svg><filter id="polychrome" color-interpolation-filters="linearRGB" filterUnits="objectBoundingBox" primitiveUnits="userSpaceOnUse">
- <feTurbulence type="fractalNoise" baseFrequency="0.035 0.03" numOctaves="1" seed="2" stitchTiles="stitch" result="turbulence"/>
- <feTurbulence type="fractalNoise" baseFrequency="0.035 0.012" numOctaves="1" seed="1" stitchTiles="stitch" result="turbulence1"/>
- <feMerge result="merge">
-  <feMergeNode in="SourceGraphic" result="mergeNode"/>
-  <feMergeNode in="turbulence" result="mergeNode1"/>
- </feMerge>
- <feColorMatrix type="saturate" values="10" in="merge" result="colormatrix"/>
- <feColorMatrix type="matrix" values="1 0 0 0 0
-0 1 0 0 0
-0 0 1 0 0
-0 0 0 10 0" in="colormatrix" result="colormatrix1"/>
- <feDisplacementMap in="colormatrix1" in2="colormatrix" scale="40" xChannelSelector="R" yChannelSelector="G" result="displacementMap"/>
- <feComposite in="displacementMap" in2="SourceAlpha" operator="in" result="composite1"/>
- <feColorMatrix type="matrix" values="1 0 0 0 0
-0 1 0 0 0
-0 0 1 0 0
-0 0 0 .5 0" x="0%" y="0%" width="100%" height="100%" in="composite1" result="colormatrix3"/>
- <feBlend mode="luminosity" x="0%" y="0%" width="100%" height="100%" in="SourceGraphic" in2="colormatrix3" result="blend2"/>
-</filter></svg>`;
+
 
 ssl.shaders.foil = `<svg><filter id="foil" color-interpolation-filters="linearRGB" filterUnits="objectBoundingBox" primitiveUnits="userSpaceOnUse">
  <feColorMatrix type="matrix" values="0.1 0 0 0 0
