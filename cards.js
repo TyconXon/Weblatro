@@ -106,7 +106,7 @@ var cards = (function() {
 		init: function(suit, rank, table) {
 			this.shortName = suit + rank;
 			this._suit = suit;
-			this.rank = rank;
+			this._rank = rank;
 			this.name = suit.toUpperCase() + rank;
 			this.faceUp = false;
 			this.faceDownBLIND = false;
@@ -149,6 +149,17 @@ var cards = (function() {
 		},
 		get suit(){
 			return this._suit;
+		},
+
+		set rank(param){
+			this._rank = param;
+			this.shortName = this.suit + this._rank;
+			this.name = this.suit.toUpperCase() + this._rank;
+			this.niceName = this.suit.replaceAll('h','♥').replaceAll('c','♣').replaceAll('d','♦').replaceAll('s','♠') + this._rank;
+			this.showCard()
+		},
+		get rank(){
+			return this._rank;
 		},
 
 		toString: function() {

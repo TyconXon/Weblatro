@@ -236,7 +236,8 @@ RULEBOOK = {
 			// },
 		]
 	},
-	anteScaling : [300,800,2000,5000,11000,20000,35000,50000],
+	//   https://www.desmos.com/calculator/rlvef810pn
+	anteScaling : [300,800,2000,5000,11000,20000,35000,50000],//,  110000,560000,7200000,300000000,47000000000, 2.900e13,7.700e16,8.600e20 ],
 	buildBlind : function(level,ante){
 		let returningBlind = {};
 		switch (level) {
@@ -257,6 +258,21 @@ RULEBOOK = {
 		returningBlind.tag = randomOf(RULEBOOK.tags, (a)=>{return a.description == "temp"})
 		// alert(returningBlind.tag.description);
 		returningBlind.minimum = this.anteScaling[ante] * returningBlind.scaling;
+		try {
+			if( isNaN(this.anteScaling[ante]) ){
+				let c = Math.round(ante) - 7
+				let d = 1 + 0.2 * c;
+				let amount = Math.floor(50000 * (1.6 + (0.75 * c)**(d) )**(c) )
+				let computed = amount - (amount % (10**(Math.floor(Math.log10(amount)-1))))
+				returningBlind.minimum = computed * returningBlind.scaling;
+				if(isNaN(returningBlind.minimum)){
+					alert("You've reached blinds too high to calculate! Congrats!");
+					returningBlind.minimum = Number.POSITIVE_INFINITY
+				}
+			}
+		} catch (error) {
+			alert(error)
+		}
 		return returningBlind;
 
 	},
@@ -289,7 +305,7 @@ RULEBOOK = {
 		
 	},
 	jokers:{
-		//on played, on scored, on held, independent , on other jokers, on discard
+		//onPlayed, onScored, onHeld, onIndependent , onOtherJokers, onDiscard, onRoundStart, onBuy, onSell
 		joker:{
 			name : "Joker",
 			description: "<mult>+4</mult> Mult",
@@ -1000,6 +1016,622 @@ RULEBOOK = {
 			hooks : [],
 			//This is a special joker - it is specifically checked for in relevant functions.
 		},
+		steelJoker:{
+			name : "Steel Joker",
+			description: "Gives <mult>X0.2</mult> Mult for each <u>Steel Card</u> in your <u>full deck</u>",
+			price: 5,
+			quality:1,
+			id : "027",
+			hooks : [
+				{
+					in:"onIndependent", 
+					out:["currentMultiplier"]
+				},
+			],
+			elementId : "NoneYet",
+	          //givenInformation = {handType, gameObject, deck, stationaryHand, card (onScored), currentMultiplier, currentChips}  
+			onIndependent : (givenInformation)=>{
+				let multmultiplier = 1;
+				cards.all.forEach(card => {
+					if(card.enhancement == "Steel Card") multmultiplier+=0.2;
+				});
+				
+				let returningData = {currentMultiplier: givenInformation.currentMultiplier * multmultiplier}
+				return returningData;
+			},
+		},
+		grosMichelJoker:{
+			name : "Gros Michel",
+			description: "<mult>+15</mult> Mult. <br> <u>1 in (9 x hands)</u> chance this card stops working permanently.",
+			price: 3,
+			quality:0,
+			id : "067",
+			hooks : [
+				{
+					in:"onIndependent", 
+					out:["currentMultiplier"]
+				},
+			],
+			elementId : "NoneYet",
+			stillWorks : 15,
+	          //givenInformation = {handType, gameObject, deck, stationaryHand, card (onScored), currentMultiplier, currentChips}  
+			onIndependent : (givenInformation)=>{
+				let returningData = {currentMultiplier: givenInformation.currentMultiplier +givenInformation.ts.stillWorks}
+				if( Math.random() < (1/(9 * Math.min(game.blind.hands,1))) ){
+					alert("The banana is extinct!");
+					givenInformation.ts.stillWorks = 0;
+					$(`#${givenInformation.ts.elementId} span`).text("Extinct!");
+					$(`#${givenInformation.ts.elementId}`).css({filter : "grayscale(100%)"});
+				}
+				return returningData;
+			},
+		},
+		dnaJoker:{
+			name : "DNA",
+			description: "If only one card is played, copy that card and add it to your hand.",
+			price: 5,
+			quality:1,
+			id : "103",
+			hooks : [
+				{
+					in:"onIndependent", 
+					out:["currentMultiplier"]
+				},
+			],
+			elementId : "NoneYet",
+	          //givenInformation = {handType, gameObject, deck, stationaryHand, card (onScored), currentMultiplier, currentChips}  
+			onIndependent : (givenInformation)=>{
+
+				if(givenInformation.handType.scoringCards.length == 1){
+					let referenceCard = givenInformation.handType.scoringCards[0];
+					let card = new cards.Card(referenceCard.suit, referenceCard.rank, '#card-table');
+					card.enhancement = referenceCard.enhancement;
+					cards.all.push(card);
+					card.el.click((ev) => {
+						if (card.container) {
+							var handler = card.container._click;
+							if (handler) {
+								handler.func.call(handler.context || window, card, ev);
+							}
+						}
+					});
+					lowerhand.addCard(card);	
+				}
+				
+				let returningData = {currentMultiplier: givenInformation.currentMultiplier}
+				return returningData;
+			},
+		},
+		throwbackJoker:{
+			name : "Throwback",
+			description: "<mult>x0.25</mult> Mult for each Blind skipped",
+			price: 5,
+			quality:1,
+			id : "075",
+			hooks : [
+				{
+					in:"onIndependent", 
+					out:["currentMultiplier"]
+				},
+			],
+			elementId : "NoneYet",
+	          //givenInformation = {handType, gameObject, deck, stationaryHand, card (onScored), currentMultiplier, currentChips}  
+			onIndependent : (givenInformation)=>{
+				let multmultiplier = 1 + (0.25 * game.player.timesSkipped);
+
+				let returningData = {currentMultiplier: givenInformation.currentMultiplier * multmultiplier}
+				return returningData;
+			},
+		},
+		bootstrapsJoker:{
+			name : "Bootstraps",
+			description: "<mult>+2</mult> Mult for every <u>$5</u> you have",
+			price: 3,
+			quality:1,
+			id : "089",
+			hooks : [
+				{
+					in:"onIndependent", 
+					out:["currentMultiplier"]
+				},
+			],
+			elementId : "NoneYet",
+	          //givenInformation = {handType, gameObject, deck, stationaryHand, card (onScored), currentMultiplier, currentChips}  
+			onIndependent : (givenInformation)=>{
+				let multAdd = (2 * Math.floor(game.player.money/5));
+
+				let returningData = {currentMultiplier: givenInformation.currentMultiplier + multAdd}
+				return returningData;
+			},
+		},
+		cardSharpJoker:{
+			name : "Card Sharp",
+			description: "<mult>x3</mult> Mult if played poker hand has already been played this round",
+			price: 5,
+			quality:1,
+			id : "114",
+			hooks : [
+				{
+					in:"onIndependent", 
+					out:["currentMultiplier"]
+				},
+			],
+			elementId : "NoneYet",
+			knownRound : -1,
+			playedHands : [],
+	          //givenInformation = {handType, gameObject, deck, stationaryHand, card (onScored), currentMultiplier, currentChips}  
+			onIndependent : (gI)=>{
+				let tMult = 1;
+				if( game.round != gI.ts.knownRound ){
+					gI.ts.playedHands = [];
+					gI.ts.knownRound = game.round;
+				}
+				if( gI.ts.playedHands.includes(gI.handType.hand) ) tMult = 3;
+				
+
+				gI.ts.playedHands.push(gI.handType.hand);
+
+				let returningData = {currentMultiplier: gI.currentMultiplier * tMult}
+				return returningData;
+			},
+		},
+		rideTheBusJoker:{
+			name : "Ride the Bus",
+			description: "This Joker gains <mult>+1</mult> Mult per <u>consecutive</u> hand played without a scoring <u>face</u> card",
+			price: 3,
+			quality:0,
+			id : "061",
+			hooks : [
+				{
+					in:"onIndependent", 
+					out:["currentMultiplier"]
+				},
+			],
+			elementId : "NoneYet",
+			growth : 0,
+	          //givenInformation = {handType, gameObject, deck, stationaryHand, card (onScored), currentMultiplier, currentChips}  
+			onIndependent : (gI)=>{
+				let search = false;
+				gI.handType.scoringCards.forEach((card)=>{
+					if(card.rank > 10) search = true;
+				});
+				if(!search){
+					gI.ts.growth++;
+				}else { gI.ts.growth = 0; }
+
+				let returningData = {currentMultiplier: gI.currentMultiplier + gI.ts.growth}
+				return returningData;
+			},
+		},
+		constellationJoker:{
+			name : "Constellation",
+			description: "This Joker gains <mult>x0.1</mult> Mult every time a Planet card is ues",
+			price: 6,
+			quality:1,
+			id : "107",
+			hooks : [
+				{
+					in:"onIndependent", 
+					out:["currentMultiplier"]
+				},
+			],
+			elementId : "NoneYet",
+			growth : 0,
+	          //givenInformation = {handType, gameObject, deck, stationaryHand, card (onScored), currentMultiplier, currentChips}  
+			onIndependent : (gI)=>{
+				gI.ts.growth = 1 + (0.1 * game.player.planetsUsed); 
+
+				let returningData = {currentMultiplier: gI.currentMultiplier * gI.ts.growth}
+				return returningData;
+			},
+		},
+		glassJoker:{
+			name : "Glass Joker",
+			description: "This Joker gains <mult>x0.5</mult> Mult every time a Glass Card breaks.",
+			price: 6,
+			quality:1,
+			id : "031",
+			hooks : [
+				{
+					in:"onIndependent", 
+					out:["currentMultiplier"]
+				},
+			],
+			elementId : "NoneYet",
+			growth : 0,
+	          //givenInformation = {handType, gameObject, deck, stationaryHand, card (onScored), currentMultiplier, currentChips}  
+			onIndependent : (gI)=>{
+				gI.ts.growth = 1 + (0.1 * game.player.glassCardsBroken); 
+
+				let returningData = {currentMultiplier: gI.currentMultiplier * gI.ts.growth}
+				return returningData;
+			},
+		},
+		photographJoker:{
+			name : "Photograph",
+			description: "First played face card gives <mult>x2</mult> mult when scored",
+			price: 5,
+			quality:0,
+			id : "130",
+			hooks : [
+				{
+					in:"onScored", 
+					out:["currentMultiplier"]
+				},
+			],
+			elementId : "NoneYet",
+          //givenInformation = {handType, gameObject, deck, stationaryHand, card (onScored), currentMultiplier, currentChips} 
+			onScored : (givenInformation)=>{
+				let search = -1;
+				let tMult = 1;
+				for (let index = 0; index < givenInformation.handType.scoringCards.length; index++) {
+					const lcard = givenInformation.handType.scoringCards[index];
+					if(lcard.rank > 10 && search == -1){
+						search = index;
+						if(givenInformation.card == lcard){
+							tMult = 2;
+						}
+					}
+				}
+				let returningData = {currentMultiplier: givenInformation.currentMultiplier * tMult}
+				return returningData
+			},
+		},
+		riffRaffJoker:{
+			name : "Riff Raff",
+			description: "More options are shown in shop.",
+			price: 3,
+			quality:0,
+			id : "119",
+			hooks : [
+				{
+					in:"onBuy", 
+					out:[""]
+				},
+				{
+					in:"onSell",
+					out:[""]
+				}
+			],
+			elementId : "NoneYet",
+          	//givenInformation = {handType, gameObject, deck, stationaryHand, card (onScored), currentMultiplier, currentChips} 
+			onBuy :  function(){
+				game.player.topShelfMax++;
+				game.player.bottomShelfMax++;
+
+			},
+			onSell : function(){
+				game.player.topShelfMax--;
+				game.player.bottomShelfMax--;
+
+			}
+		},
+		jugglerJoker:{
+			name : "Juggler",
+			description: "+1 Hand Size",
+			price: 5,
+			quality:0,
+			id : "010",
+			hooks : [
+				{
+					in:"onBuy", 
+					out:[""]
+				},
+				{
+					in:"onSell",
+					out:[""]
+				}
+			],
+			elementId : "NoneYet",
+          	//givenInformation = {handType, gameObject, deck, stationaryHand, card (onScored), currentMultiplier, currentChips} 
+			onBuy :  function(){
+				game.player.handSize++;
+			},
+			onSell : function(){
+				game.player.handSize--;
+			}
+		},
+		drunkardJoker:{
+			name : "Drunkard",
+			description: "+1 Discard",
+			price: 3,
+			quality:0,
+			id : "011",
+			hooks : [
+				{
+					in:"onBuy", 
+					out:[""]
+				},
+				{
+					in:"onSell",
+					out:[""]
+				}
+			],
+			elementId : "NoneYet",
+          	//givenInformation = {handType, gameObject, deck, stationaryHand, card (onScored), currentMultiplier, currentChips} 
+			onBuy :  function(){
+				game.player.initialDiscards++;
+				game.blind.discards++;
+			},
+			onSell : function(){
+				game.player.initialDiscards--;
+			}
+		},
+		certificateJoker:{
+			name : "Certificate",
+			description: "Add a random enhanced playing card to your hand at the start of each round",
+			price: 6,
+			quality:1,
+			id : "088",
+			hooks : [
+				{
+					in:"onRoundStart", 
+					out:[""]
+				},
+				
+			],
+			elementId : "NoneYet",
+          	//givenInformation = {handType, gameObject, deck, stationaryHand, card (onScored), currentMultiplier, currentChips} 
+			onRoundStart :  function(){
+				try {
+						let randomSuit = Math.floor(Math.random() * 4);
+						let chosenSuit = "none";
+						switch (randomSuit) {
+							case 0:
+								chosenSuit = 'h'
+								break;
+							case 1:
+								chosenSuit = 's'
+								break;
+							case 2:
+								chosenSuit = 'd'
+								break;
+							case 3:
+								chosenSuit = 'c'
+								break;
+						}
+			
+						let card = new cards.Card(chosenSuit, Math.ceil(Math.random() * 13), '#card-table');
+						let randomChoice = Math.ceil(Math.random() * 9)
+						switch (randomChoice) {
+							case 1:
+								card.enhancement = RULEBOOK.enhancements.none;
+								break;
+							case 2:
+								card.enhancement = RULEBOOK.enhancements.bonus;
+								break;
+							case 3:
+								card.enhancement = RULEBOOK.enhancements.mult;
+								break;
+							case 4:
+								card.enhancement = RULEBOOK.enhancements.mult;
+								break;
+							case 5:
+								card.enhancement = RULEBOOK.enhancements.glass;
+								break;
+							case 6:
+								card.enhancement = RULEBOOK.enhancements.glass;
+								break;
+							case 7:
+								card.enhancement = RULEBOOK.enhancements.steel;
+								break;
+							case 8:
+								card.enhancement = RULEBOOK.enhancements.gold;
+								break;
+							case 9:
+								card.enhancement = RULEBOOK.enhancements.lucky;
+								break;
+						}
+						cards.all.push(card);
+						card.el.click((ev) => {
+							if (card.container) {
+								var handler = card.container._click;
+								if (handler) {
+									handler.func.call(handler.context || window, card, ev);
+								}
+							}
+						});
+						// alert(cards.mouseEvent)
+						// deck.addCard(card);
+						lowerhand.addCard(card);
+						lowerhand.render();
+				} catch (error) {
+					alert(error)
+				}
+			}
+		},
+		ancientJoker:{
+			name : "Ancient Joker",
+			description: "<mult>x1.5</mult> Mult for each [###] card played. Suit changes every round.",
+			Basicdescription: "<mult>x1.5</mult> Mult for each [###] card played. Suit changes every round.",
+			price: 4,
+			quality:1,
+			id : "155",
+			hooks : [
+				{
+					in:"onScored", 
+					out:["currentMultiplier"]
+				},
+				{
+					in:"onRoundStart", 
+					out:[""]
+				},
+			],
+			elementId : "NoneYet",
+			chosenSuit : "",
+	        onRoundStart : (ts)=>{
+				try {
+					// alert(JSON.stringify(ts))
+					let suits = ["h","s","d","c"];
+					let suitsNice = ["hearts","spades","diamonds","clubs"];
+	
+					let rng = Math.floor(Math.random() * suits.length)
+					let m = suitsNice[rng];
+					// alert(m)
+					ts.chosenSuit = suits[rng];
+					ts.description = ts.Basicdescription.replace("[###]", `<${m}>${m}</${m}>`)
+					$(`#${ts.elementId} span`).html(ts.description);
+					// alert("fin")
+
+				} catch (error) {
+					alert(error)
+				}
+			},
+			 
+			onScored : (gI)=>{
+				let tMult = 1;
+				if( gI.card.suit == gI.ts.chosenSuit ) tMult = 1.5;
+
+				let returningData = {currentMultiplier: gI.currentMultiplier * tMult}
+				return returningData;
+			},
+		},
+		hitTheRoadJoker:{
+			name : "Hit the Road",
+			description: "This joker gains <mult>x0.5</mult> Mult for each jack discarded this round.",
+			price: 4,
+			quality:1,
+			id : "058",
+			hooks : [
+				{
+					in:"onIndependent", 
+					out:["currentMultiplier"]
+				},
+				{
+					in:"onRoundStart", 
+					out:[""]
+				},
+				{
+					in:"onDiscard", 
+					out:[""]
+				},
+			],
+			elementId : "NoneYet",
+			growth : 0,
+	        onRoundStart : (ts)=>{
+				try {
+					ts.growth = 0;
+				} catch (error) {
+					alert(error)
+				}
+			},
+			onDiscard : (cards,ts)=>{
+				cards.forEach(card => {
+					if(card.rank == 11) ts.growth++;
+				});
+			},
+			 
+			onIndependent : (gI)=>{
+				let tMult = 1 + (0.5 * gI.ts.growth);
+				let returningData = {currentMultiplier: gI.currentMultiplier * tMult}
+				return returningData;
+			},
+		},
+		ramenJoker:{
+			name : "Ramen",
+			description: "<mult>x2</mult> Mult. <mult>-x0.01</mult> per card discarded.",
+			price: 4,
+			quality:0,
+			id : "150",
+			hooks : [
+				{
+					in:"onIndependent", 
+					out:["currentMultiplier"]
+				},
+				{
+					in:"onDiscard", 
+					out:[""]
+				},
+			],
+			elementId : "NoneYet",
+			growth : 2,
+			onDiscard : (cards,ts)=>{
+				cards.forEach(card => {
+					ts.growth-=0.01;
+				});
+			},
+			 
+			onIndependent : (gI)=>{
+				let tMult = gI.ts.growth;
+				let returningData = {currentMultiplier: gI.currentMultiplier * tMult}
+				return returningData;
+			},
+		},
+		popcornJoker:{
+			name : "Popcorn",
+			description: "+20 Mult. -4 Mult per round",
+			price: 4,
+			quality:0,
+			id : "149",
+			hooks : [
+				{
+					in:"onIndependent", 
+					out:["currentMultiplier"]
+				},
+			],
+			elementId : "NoneYet",
+			growth : 25,
+	        onRoundStart : (ts)=>{
+				try {
+					ts.growth -= 5;
+				} catch (error) {
+					alert(error)
+				}
+			},
+			onIndependent : (gI)=>{
+				let addMult = gI.ts.growth;
+				let returningData = {currentMultiplier: gI.currentMultiplier + addMult}
+				return returningData;
+			},
+		},
+		walkieTalkieJoker:{
+			name : "Walkie-Talkie",
+			description: "Played <u>10s or 4s</u> give <chips>+10</chips> Chips and <mult>+4</mult> Mult when scored",
+			price: 3,
+			quality:0,
+			id : "156",
+			hooks : [
+				{
+					in:"onScored", 
+					out:["currentMultiplier", "currentChips"]
+				},
+			],
+			elementId : "NoneYet",
+          //givenInformation = {handType, gameObject, deck, stationaryHand, card (onScored), currentMultiplier, currentChips} 
+			onScored : (givenInformation)=>{
+				let acesCounted = 0
+				if(givenInformation.card.rank == 10 || givenInformation.card.rank == 4){
+					acesCounted++
+				}
+
+				let returningData = {
+					currentMultiplier: givenInformation.currentMultiplier + (acesCounted * 4),
+					currentChips : givenInformation.currentChips + (acesCounted * 10)
+				}
+				return returningData;   
+			},
+		},
+		fortuneTellerJoker:{
+			name : "Fortune Teller",
+			description: "<mult>+1</mult> Mult per tarot card used this run",
+			price: 6,
+			quality:1,
+			id : "057",
+			hooks : [
+				{
+					in:"onIndependent", 
+					out:["currentMultiplier"]
+				},
+			],
+			elementId : "NoneYet",
+	          //givenInformation = {handType, gameObject, deck, stationaryHand, card (onScored), currentMultiplier, currentChips}  
+			onIndependent : (gI)=>{
+				let growth = game.player.tarotsUsed; 
+
+				let returningData = {currentMultiplier: gI.currentMultiplier * growth}
+				return returningData;
+			},
+		},
 	},
 	vouchers:{
 		overstockVoucher : {
@@ -1213,6 +1845,65 @@ RULEBOOK = {
 				id : "19"
 			},
 		],
+	},
+	rngWeights : {
+		booster : {
+			key : [
+				"standardNormal",
+				"standardJumbo",
+				"standardMega",
+
+				"arcanaNormal",
+				"arcanaJumbo",
+				"arcanaMega",
+
+				"celestialNormal",
+				"celestialJumbo",
+				"celestialMega",
+
+				"buffoonNormal",
+				"buffoonJumbo",
+				"buffoonMega",
+
+				// "SpectralNormal",
+				// "spectralJumbo",
+				// "spectralMega",
+			],
+			value : [
+				4,
+				2,
+				0.5,
+
+				4,
+				2,
+				0.5,
+
+				4,
+				2,
+				0.5,
+
+				1.2,
+				0.6,
+				0.15
+			]
+			// standard : {
+			// 	normal: 4,
+			// 	jumbo : 2,
+			// 	mega  : 0.5,
+			// },
+			// arcana : this.standard,
+			// celestial : this.standard,
+			// buffoon : {
+			// 	normal: 1.2,
+			// 	jumbo : 0.6,
+			// 	mega  : 0.15,
+			// },
+			// spectral : {
+			// 	normal: 0.6,
+			// 	jumbo : 0.3,
+			// 	mega  : 0.07,
+			// },
+		}
 	},
 
 	tags : {

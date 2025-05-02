@@ -236,6 +236,7 @@
 	#reroll, #voucher-box{
 		position:absolute;
 		height: 130px;
+		font-size: 30px;
 	}
 
 	#Info{
@@ -497,11 +498,21 @@
 	.in-shop .Foil {
 		filter : url(#foil);
 	}
-
+	
 	.Polychrome {
-		filter : url(#polychrome);
+		filter: url(#rainbowOverlay);
 	}
 
+	.Polychrome:before {
+		background: url(img/Editions.png) -213px 0;
+		mix-blend-mode: color;
+		display: block;
+		position: absolute;
+		z-index: 999999999;
+		width: 71px;
+		height: 95px;
+		content: "";
+	}
 	.scoringCard {
 		animation : none !important;
 		translate : 0px -10px !important;
@@ -703,7 +714,7 @@
 
 	.in-shop img {
 		--rand : 0.5;
-		animation: idle 5s ease infinite alternate;
+		/* animation: idle 5s ease infinite alternate; */
 	}
 	
 	.in-shop {
@@ -766,7 +777,7 @@
 			filter : brightness(100%) drop-shadow(8px 8px 0px rgba(0,0,0,0.5)) grayscale(0%);
 		}
 
-		1%: {
+		1% {
 			scale: 1;
 		  }
 		  25% {
@@ -793,7 +804,7 @@
 			filter : brightness(100%) grayscale(0%);
 		}
 
-		1%: {
+		1% {
 			scale: 1;
 		}
 		25% {
@@ -1087,7 +1098,7 @@
 		font-size: 32px;
 	}
 	[popover]{
-		transition: * 2s;
+		transition: all 2s;
 	}
 	::backdrop {
 		backdrop-filter: brightness(50%);
@@ -1179,6 +1190,17 @@ path {
 	  border-radius: 50%;
 	  z-index: 999999;
   }
+
+#peppino{
+	position: fixed;
+	top:0;
+	right:0;
+}
+[cheatsinfo]{
+	position: absolute;
+	width: 100%;
+	background-color: red;
+}
 
 .crt::before {
 	content: " ";

@@ -51,6 +51,7 @@ document.addEventListener("keyup",(ev)=>{
     if(ev.key == "~"){
       let input = prompt('>');
       window.stdlog(eval(input));
+      if(sv_cheats == 1) {$("#peppino").show()};
     }
 })
 
