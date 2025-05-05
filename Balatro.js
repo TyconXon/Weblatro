@@ -156,7 +156,7 @@ discardPile.x += 360;
 $('#deal').hide();
 let jokerKeys = Object.keys(RULEBOOK.jokers);
 let bosses = RULEBOOK.blinds.boss.length;
-document.querySelector("footer").innerHTML += `  | AutoUpdate info: [ ${jokerKeys.length}/150 jokers (<u> ${Math.floor(100 * (jokerKeys.length / 150))}% </u>) | ${bosses}/30 blinds (<u> ${Math.floor(100 * (bosses / 30))}% </u>) ]`
+document.querySelector("footer").innerHTML += `  | AutoUpdate info: [ ${jokerKeys.length}/150 jokers (<u> ${Math.floor(100 * (jokerKeys.length / 150))}% </u>) | ${bosses}/30 blinds (<u> ${Math.floor(100 * (bosses / 30))}% </u>) ] `
 
 
 if (!alwaysShowShop) {
@@ -1037,7 +1037,9 @@ function dollarify(number) {
 
 
 
-
+function test(){
+	return [...arguments];
+}
 
 
 //  SETTINGS
@@ -1739,7 +1741,7 @@ function detectPokerHand(cards) {
 
 	let scoringCards = cards.filter(card => scoringRanks.has(rankMap[card]));
 
-	if (game.player.jokers.includes(RULEBOOK.jokers.splashJoker)) {
+	if (game.player.jokers.find((elJoker) => { return elJoker.name == "Splash" })) {
 		scoringCards = cards;
 	}
 

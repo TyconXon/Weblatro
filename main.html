@@ -96,9 +96,9 @@
 		</dialog>
 
 		<div popover id="settingsWindow">
-		
+			<h2 style="text-align:center;">Settings!</h2>
 			<button onclick="localStorage.setItem('deckURL', prompt('Path to the image:', 'img/BalatroCards_Free.png')); $(':root').css({'--deck-url' : `url(${localStorage.getItem('deckURL')})`}); ">Change card appearance</button> <br>
-			<br>
+			<br><hr>
 			<input type="checkbox" id="instantCount" name="ic">
   			<label for="ic"> Instant counting</label><br>
 
@@ -131,7 +131,16 @@
 
 			<input type="checkbox" id="noPackShader" name="noPackShader">
   			<label for="noPackShader"> Disable booster pack shaders</label><br>
+			
+			<hr>
 
+			<button register> Register mod</button>
+			<button unregister> Unregister mod</button>
+			<ul id="modList">
+			</ul>
+
+			
+			<hr>
 			<button onclick='$("*").on("mousemove", hoverCard);$("*").on("mouseout", noHoverCard);'> Don't click me </button> <br>
 		</div>
 
@@ -195,14 +204,15 @@
 		<a href='https://www.playbalatro.com'>Balatro by LocalThunk</a> 
 
 		<!-- load this at the bottom so the #card-table element exists -->
-		<script src="rulebook.js"></script>
-		<script src="ssl.js"></script>
-		<script src="hoverCard.js"></script>
-		<script src="deckType.js"></script>
-		<script src="cards.js"></script>
-		<script src="Balatro.js"></script>
-
-
+		<scripts>
+			<script src="rulebook.js"></script>
+			<script src="ssl.js"></script>
+			<script src="hoverCard.js"></script>
+			<script src="deckType.js"></script>
+			<script src="cards.js"></script>
+			<script src="Balatro.js"></script>
+			<script src="ModLoader.js"></script>
+		</scripts>
 		
 
 
