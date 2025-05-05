@@ -4,7 +4,7 @@ const modListElement   = $("#modList"    );
 
 const naturalJokers    = Object.keys(RULEBOOK.jokers).length;
 
-var   _modList         = JSON.parse(localStorage.getItem("modList"));
+var   _modList         = JSON.parse(localStorage.getItem("modList")) || [];
 	
 const modList = new Proxy(_modList, {
 		set : (target, prop, value, receiver)=>{
