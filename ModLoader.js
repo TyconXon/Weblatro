@@ -32,6 +32,7 @@ const modList = new Proxy(_modList, {
 let isFirstTimeLoadingMods = true;
 function rerenderModList(){
 	modListElement.html("");
+	if(JSON.parse(localStorage.getItem("modList")) == null) return;
 	JSON.parse(localStorage.getItem("modList")).forEach(mod => {
 		let modEntryElement = $("<li></li>");
 		modEntryElement.text(mod);
