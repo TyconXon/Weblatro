@@ -4,8 +4,10 @@
 		<title>Weblatro</title>
 		<meta charset="UTF-8">
 		<link rel="stylesheet" href="example.css"/>
+		<link rel="stylesheet" href="https://raw.githubusercontent.com/jquery/jquery-ui/refs/heads/main/themes/base/all.css"/>
 		<script src="hookConsole.js"></script>
 		<script src="jquery-1.7.min.js"></script>
+		<script src="jquery-ui.js"></script>
 		<link rel="icon" href="img/Icons/icon_00.png">
 		<div class="crt"></div>
 	</head>
@@ -100,7 +102,10 @@
 			<button onclick="localStorage.setItem('deckURL', prompt('Path to the image:', 'img/BalatroCards_Free.png')); $(':root').css({'--deck-url' : `url(${localStorage.getItem('deckURL')})`}); ">Change card appearance</button> <br>
 			<br><hr>
 			<input type="checkbox" id="instantCount" name="ic">
-  			<label for="ic"> Instant counting</label><br>
+  			<label for="ic"> Instant Counting</label><br>
+
+			<input type="checkbox" disabled id="noAnims" name="noAnims">
+  			<label for="noAnims"> Disable Animations</label><br>
 
 			<input type="checkbox" id="noBackground" name="noBackground">
   			<label for="noBackground"> No Background</label><br>
@@ -112,7 +117,7 @@
   			<label for="noBuldge"> No Hud-Buldge</label><br>
 
 			<input type="checkbox" id="noBlocky" name="noBlocky">
-  			<label for="noBlocky"> No Blocky corners</label><br>
+  			<label for="noBlocky"> No Blocky Corners</label><br>
 
 			<input type="checkbox" id="noFooter" name="noFooter">
   			<label for="noFooter"> No Footer</label><br>
@@ -124,14 +129,17 @@
   			<label for="noShadows"> Disable Text Shadows</label><br>
 
 			<input type="checkbox" id="altEditions" name="altEditions">
-  			<label for="altEditions"> Alternate edition visuals</label><br>
+  			<label for="altEditions"> Alternate Edition Visuals</label><br>
 
 			<input type="checkbox" id="noSound" name="noSound">
-  			<label for="noSound"> Disable sounds (May help with performance)</label><br>
+  			<label for="noSound"> Disable Sounds (May help with performance)</label><br>
 
 			<input type="checkbox" id="noPackShader" name="noPackShader">
-  			<label for="noPackShader"> Disable booster pack shaders</label><br>
+  			<label for="noPackShader"> Disable Booster-Pack Shaders</label><br>
 			
+			<label for="delayMult">Delay:</label><br>
+			<input type="range" id="delayMult" value="1" step="0.25" name="delayMult" min="0.25" max="4">
+
 			<hr>
 
 			<button register> Register mod</button>
@@ -141,7 +149,20 @@
 
 			
 			<hr>
-			<button onclick='$("*").on("mousemove", hoverCard);$("*").on("mouseout", noHoverCard);'> Don't click me </button> <br>
+			<button onclick='$("#glCanvas").css({animation:"rotatingHue 3s linear infinite"})'> Rainbow background </button>
+			<button onclick='$(`.card, button, dialog, popover,.joker`).addClass("rtx")'> RTX Mode </button>
+			<button onclick='$("*").on("mousemove", hoverCard);$("*").on("mouseout", noHoverCard);'> Don't click me </button>
+			<button onclick='$("*").draggable();'> Help me organize </button>
+			<button onclick='$("html").css({animation:"rotatingHue 3s linear infinite"})'> Ough </button>
+			<button onclick='$("*").css({direction:"rtl", "unicode-bidi":"bidi-override"})'> Something's Wrong... </button><br>
+			<button onclick='$("*").css({"transform": "rotate(180deg)"})'> Spider view </button>
+			<button onclick='$(`.card,.joker,button`).addClass("spin")'> World revolving </button>
+			<button onclick='$(`.card,#Info,.joker,button,h1,h2,h3,p,pre,.tooltip,[popover]`).addClass("blurry");game.modifiers.blurry = true;'> Dropped something... </button>
+			<button onclick='$(`.card,#Info,.joker,button,p,pre,body`).addClass("flicker");$(`html`).css({background:`black`})'> "Low power mode" </button>
+			<button onclick='$(`*`).prop("contenteditable", true)'> Hacker elite </button> <br>
+			<button onclick='$(`*`).addClass("old")'> 1990s </button>
+
+			
 		</div>
 
 		<dialog id="boosterPackWindow">
@@ -199,7 +220,7 @@
 		  
 		<br><br>
 		<footer>
-			<p>Balatro recreation for the web, by Maximus Fayte Miller. Using Cards.js for card rendering.  </p>
+			<p>Balatro recreation for the web, by Maximus Fayte Miller. Using Cards.js for card rendering. Early beta. Todo: Card packs, tarot cards, planet cards, spectral cards, vouchers, shop reroll, animations, satisfying stuff. </p>
 		</footer>
 		<a href='https://www.playbalatro.com'>Balatro by LocalThunk</a> 
 

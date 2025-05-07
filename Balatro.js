@@ -26,7 +26,6 @@ var backgroundColors = [
 ];
 backgroundColors = RULEBOOK.blinds.small.colors;
 
-
 // Game state and configuration
 const game = {
 	gamestate: "None",
@@ -132,6 +131,11 @@ const game = {
 				alert(error)	
 			}
 		},
+	},
+	modifiers: {
+		blurry : false,
+		rtx    : false,
+		spin   : false,
 	}
 };
 
@@ -185,7 +189,7 @@ function startBlind() {
 	$(":root").css({ "--dyn-ui-blind": game.blind.color ? game.blind.color : "#FE5F55" });
 	$(":root").css({ "--dyn-ui-blind-dark": game.blind.color ? pSBC(-0.5, game.blind.color) : "#ec1d0e" });
 
-	$("#blind-selection").animate({ bottom: "-50vh" }, timing, "swing", () => {
+	$("#blind-selection").animate({ bottom: "-50vh" }, timing * delayMult, "swing", () => {
 
 		if (!alwaysShowShop) {
 			$('#store-box').hide()
@@ -268,7 +272,7 @@ function showAnte() {
 	$('#store-box').hide()
 	$('#controls').hide()
 	$('#ante-box').show()
-	$("#blind-selection").animate({ bottom: "0" }, 100);
+	$("#blind-selection").animate({ bottom: "0" }, 100 * delayMult);
 	updateBlindSelection();
 }
 
@@ -370,7 +374,13 @@ function fillShopUpperDeck() {
 		//.html(`<button class="joker in-shop" title="${RULEBOOK.jokers[randomChoice].name}" onclick="buy('${randomChoice}','store${uid}')" id="store${uid}"><span class="price">$${RULEBOOK.jokers[randomChoice].price}</span><img style="animation-delay: ${Math.random()*3}ms;animation-direction: ${Math.random()>0.50?"alternate-reverse":"alternate"};" src='img/Jokers/joker_${RULEBOOK.jokers[randomChoice].id}.png'><span class="tooltiptext">${RULEBOOK.jokers[randomChoice].description}</span></button>`);
 		let newShopItem = $("<button></button>");
 		newShopItem.addClass("joker in-shop");
-		newShopItem.prop("title", RULEBOOK.jokers[randomChoice].name);
+		if(game.modifiers.blurry){
+			newShopItem.prop("title", "I don't know");
+			newShopItem.addClass("blurry");
+			merchandiseObject.description = "I don't know";
+		}else{
+			newShopItem.prop("title", RULEBOOK.jokers[randomChoice].name);
+		}
 		newShopItem.prop("id", `store${uid}`);
 		newShopItem.click(() => {
 			buy(merchandiseObject, uid);
@@ -424,7 +434,12 @@ function fillShopLowerDeck() {
 			//.html(`<button class="joker in-shop" title="${RULEBOOK.jokers[randomChoice].name}" onclick="buy('${randomChoice}','store${uid}')" id="store${uid}"><span class="price">$${RULEBOOK.jokers[randomChoice].price}</span><img style="animation-delay: ${Math.random()*3}ms;animation-direction: ${Math.random()>0.50?"alternate-reverse":"alternate"};" src='img/Jokers/joker_${RULEBOOK.jokers[randomChoice].id}.png'><span class="tooltiptext">${RULEBOOK.jokers[randomChoice].description}</span></button>`);
 			let newShopItem = $("<button></button>");
 			newShopItem.addClass("joker in-shop");
-			newShopItem.prop("title", randomChoice.type);
+			if(game.modifiers.blurry){
+				newShopItem.prop("title", "I don't know");
+				newShopItem.addClass("blurry");
+			}else{
+				newShopItem.prop("title", randomChoice.type);
+			}
 			newShopItem.prop("id", `store${uid}`);
 			newShopItem.click(() => {
 				buyPack(randomChoice, uid, price)
@@ -1005,7 +1020,7 @@ function winBlind() {
 		callback: () => {
 			document.getElementById("mydiv").showModal();
 			$('#mydiv').css({ top: "1000px", opacity: 0 });
-			$('#mydiv').animate({ top: "0px", opacity: 1 }, 250)
+			$('#mydiv').animate({ top: "0px", opacity: 1 });
 		}
 	});
 	document.getElementById("play").innerText = "Next";
@@ -1013,14 +1028,14 @@ function winBlind() {
 
 $('#closingPop').click(() => {
 	if (playSounds) { new Audio('snd/coin1.ogg').play(); }
-	$('#mydiv').animate({ top: "1000px", opacity: 0 }, 250, "swing", () => {
+	$('#mydiv').animate({ top: "1000px", opacity: 0 }, 250 * delayMult, "swing", () => {
 		nextBlind();
 		showShop();
 
 		$('#controls').show();
 		document.getElementById("mydiv").close()
 		$("#store-box").css({ opacity: 0 });
-		$("#store-box").animate({ opacity: 1 }, 250);
+		$("#store-box").animate({ opacity: 1 }, 250 * delayMult);
 
 	});
 
@@ -1144,6 +1159,17 @@ $("#noSound").on("change", () => {
 	}
 }).trigger("change");
 
+
+$("#noAnims").prop('checked', eval(localStorage.getItem("#noAnims")));
+$("#noAnims").on("change", () => {
+	localStorage.setItem("#noAnims", $("#noAnims").prop('checked'));
+	if ($("#noAnims").prop('checked')) {
+		$.fx.off = true;
+	} else {
+		$.fx.off = false;
+	}
+}).trigger("change");
+
 var packShader = true;
 $("#noPackShader").prop('checked', eval(localStorage.getItem("#noPackShader")));
 $("#noPackShader").on("change", () => {
@@ -1153,6 +1179,14 @@ $("#noPackShader").on("change", () => {
 	} else {
 		packShader = true;
 	}
+}).trigger("change");
+
+var delayMult = 1;
+$("#delayMult").prop('value', eval(localStorage.getItem("#delayMult")));
+$("#delayMult").on("change", () => {
+	localStorage.setItem("#delayMult", $("#delayMult").prop('value'));
+	delayMult = $("#delayMult").prop("value");
+
 }).trigger("change");
 
 
@@ -1277,12 +1311,12 @@ async function satisfactionTextUpdate(text, element, color) {
 		let toRight = getOffset(element).top + (Number(element.style.height.slice(0, -2)) / 4)
 
 		$(element).css({ scale: 1.25 });
-		$(element).animate({ scale: 1 }, { duration: 250, queue: false });
+		$(element).animate({ scale: 1 }, { duration: 250 * delayMult, queue: false });
 
 		$(satisfyingWrapper).css({ left: toLeft + "px", top: toRight + "px", opacity: 0.1, apple: 0.1, "--scale": 0.1 });
 		// satisfyingWrapper.style.setProperty("--degree", `${45 * Math.ceil(Math.random()*8)}deg`)
 		$(satisfyingWrapper).animate({ opacity: 1, apple: 1 }, {
-			duration: 400, step: () => {
+			duration: 400 * delayMult, step: () => {
 				satisfyingWrapper.style.setProperty("--scale", satisfyingWrapper.style.opacity);
 			}
 		});
@@ -1771,8 +1805,12 @@ async function countScore(elementId, target, speed) {
 	let difference = toNumber(ele.innerText) > target ? -1 : 1;
 	let i = 0;
 
+	if ($("#instantCount").prop('checked') || $.fx.off) {
+		ele.innerText = target.toLocaleString();
+		return;
+	}
 
-	while (toNumber(ele.innerText) != target) {
+	while (toNumber(ele.innerText) != target.toLocaleString()) {
 		let countingDivisor = 1;
 
 		if (Math.abs(target - toNumber(ele.innerText)) > 100) countingDivisor = 50;
@@ -1781,7 +1819,7 @@ async function countScore(elementId, target, speed) {
 		if (Math.abs(target - toNumber(ele.innerText)) > 100000) countingDivisor = 50000;
 
 
-		if ($("#instantCount").prop('checked') || toNumber(ele.innerText) < 0 ||
+		if ($("#instantCount").prop('checked') || $.fx.off || toNumber(ele.innerText) < 0 ||
 			(toNumber(ele.innerText) > target && difference == 1) ||
 			(toNumber(ele.innerText) < target && difference == -1)
 		) {
@@ -1810,7 +1848,7 @@ var observerForAnimations = new MutationObserver(function (mutations) {
 		if (last[ele.id] && last[ele.id] == ele.innerText) return;
 		last[ele.id] = ele.innerText;
 		$(ele).css({ letterSpacing: "3px" });
-		$(ele).animate({ letterSpacing: "1px" }, { duration: 250, queue: false });
+		$(ele).animate({ letterSpacing: "1px" }, { duration: 250 * delayMult, queue: false });
 
 		if (mutation.target.id == "playingHandChips" || mutation.target.id == "playingHandMult") {
 			updateFireCheck();
@@ -1834,7 +1872,7 @@ const splitElement = (querySel) => {
 };
 
 const delay = (delayInms) => {
-	return new Promise(resolve => setTimeout(resolve, delayInms));
+	return new Promise(resolve => setTimeout(resolve, delayInms * delayMult));
 };
 
 // const sample = async () => {

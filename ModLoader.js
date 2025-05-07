@@ -4,7 +4,6 @@ const modListElement   = $("#modList"    );
 
 const naturalJokers    = Object.keys(RULEBOOK.jokers).length;
 
-if(localStorage.getItem("modList") == null) localStorage.setItem("modList", "[]");
 var   _modList         = JSON.parse(localStorage.getItem("modList"));
 	
 const modList = new Proxy(_modList, {
@@ -33,7 +32,6 @@ const modList = new Proxy(_modList, {
 let isFirstTimeLoadingMods = true;
 function rerenderModList(){
 	modListElement.html("");
-	if(JSON.parse(localStorage.getItem("modList")) == null) return;
 	JSON.parse(localStorage.getItem("modList")).forEach(mod => {
 		let modEntryElement = $("<li></li>");
 		modEntryElement.text(mod);
@@ -82,3 +80,5 @@ unregisterButton.on("click", ()=>{
 		alert(`Click: `+error);
 	}
 });
+
+$(".card,.joker").draggable()
