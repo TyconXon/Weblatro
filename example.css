@@ -756,15 +756,12 @@
 		0%{
 			perspective: 500px;
 			rotate: 0.1 1 0.25 25deg;
-			translate: 0px -1px;
-			/* rotate: z -3deg; */
+			/* translate: 0px -1px; */
 		}
 		100%{
 			perspective: 500px;
 			rotate: 0.1 1 0.25 -25deg;
-			translate: 0px 1px;
-			/* rotate: z 3deg; */
-
+			/* translate: 0px 1px; */
 		}
 	}
 
