@@ -922,6 +922,7 @@ function jokerShiftLeft(){
 $('#play').click(() => { if (!countingScore) { game.blind.inPlay ? Playhand() : showAnte() } });
 $('#discard').click(() => {
 	if (game.blind.discards <= 0) return alert("You don't have any discards left!");
+	if (upperhand.length == 0   ) return ;
 	game.player.jokers.forEach(joker => {
 		if(joker.onDiscard) {joker.onDiscard(upperhand, joker)};
 	});
