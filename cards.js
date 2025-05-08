@@ -124,7 +124,7 @@ var cards = (function() {
 			this.el = $('<div/>').css({
 				width: opt.cardSize.width,
 				height: opt.cardSize.height,
-				"background-image": 'var(--deck-url), url(img/BaltroBacks.png)',
+				"background-image": 'var(--deck-url), var(--back-url)',
 				position: 'absolute',
 				cursor: 'pointer',
 				animationDirection: `${Math.random()>0.50?"alternate-reverse":"alternate"}`

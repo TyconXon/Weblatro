@@ -13,6 +13,9 @@ const storeBottomShelf = document.getElementById("lower-shelf");
 
 const showFullyCalculatedHand = false;
 const deckURL = localStorage.getItem('deckURL') || "img/BalatroCards_Free.png";
+$(':root').css({'--back-url' : `url(${localStorage.getItem('backURL') || "img/BaltroBacks.png"})`});
+$(':root').css({'--font' : `${localStorage.getItem('font') || "Balatro"}`});
+
 var countingScore = false;
 var dealing = false;
 

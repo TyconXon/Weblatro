@@ -68,9 +68,10 @@
 	--dyn-ui-blind-dark :rgb(200, 127, 0);
 
 	--deck-url : url(img/cards.png);
+	--back-url : url(img/BaltroBacks.png);
 
 	--border-radius : 8px;
-
+	--font : "Balatro";
 
 	text-shadow: 2px 2px rgba(0,0,0,0.5);
 }
@@ -90,7 +91,7 @@
 		width: 600px;
 		color:white;
 		margin:20px auto; 
-		font-family: "Balatro"; 
+		font-family: var(--font); 
 		padding:25px;  
 	}
 
@@ -138,7 +139,7 @@
 
 	button {
 		text-align: center;
-		font-family: "Balatro"; 
+		font-family: var(--font); 
 	}
 
 	.card:active, button:active{
@@ -1166,7 +1167,7 @@
 
 /* Other */
 pre{
-	font-family: "Balatro";
+	font-family: var(--font);
 }
 
 path {
