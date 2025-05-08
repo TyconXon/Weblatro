@@ -160,7 +160,7 @@
 			<button onclick='$(`.card,#Info,.joker,button,h1,h2,h3,p,pre,.tooltip,[popover]`).addClass("blurry");game.modifiers.blurry = true;'> Dropped something... </button>
 			<button onclick='$(`.card,#Info,.joker,button,p,pre,body`).addClass("flicker");$(`html`).css({background:`black`})'> "Low power mode" </button>
 			<button onclick='$(`*`).prop("contenteditable", true)'> Hacker elite </button> <br>
-			<button onclick='$(`*`).addClass("old")'> 1990s </button>
+			<button onclick='$(`*`).addClass("old"); $(":root").css({"--deck-url" : `url(${"img/cards.png"})`});'> 1990s </button>
 
 			
 		</div>
