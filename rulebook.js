@@ -1611,6 +1611,51 @@ RULEBOOK = {
 				return returningData;   
 			},
 		},
+		squareJoker:{
+			name : "Square Joker",
+			description: "Played <u>9s or 4s</u> give <chips>x1.5</chips> chips when scored. If scoring cards's rank add up to a perfect square, or chips are a perfect square, <chips>x1.5</chips> Chips (stackable). <u>(By Martinez)</u>",
+			price: 4,
+			quality:1,
+			id : "117",
+			hooks : [
+				{
+					in:"onScored", 
+					out:["currentChips"]
+				},
+				{
+					in:"onIndependent", 
+					out:["currentChips"]
+				},
+			],
+			elementId : "NoneYet",
+          //givenInformation = {handType, gameObject, deck, stationaryHand, card (onScored), currentMultiplier, currentChips} 
+			onScored : (givenInformation)=>{
+				let acesCounted = 1
+				if(givenInformation.card.rank == 9 || givenInformation.card.rank == 4){
+					acesCounted+=0.5;
+				}
+
+				let returningData = {
+					currentChips : givenInformation.currentChips * (acesCounted)
+				}
+				return returningData;   
+			},
+			onIndependent : (gI)=>{
+				let timesMult = 1;
+				let rankAdd = 0;
+				gI.handType.scoringCards.forEach(card => {
+					rankAdd+=card.rank;
+				});
+				if((Math.sqrt(rankAdd) == Math.round(Math.sqrt(rankAdd)))){
+					timesMult+=0.5;
+				}
+				if((Math.sqrt(gI.currentChips) == Math.round(Math.sqrt(gI.currentChips)))){
+					timesMult+=0.5;
+				}
+				let returningData = {currentChips: gI.currentChips * timesMult}
+				return returningData;
+			},
+		},
 		fortuneTellerJoker:{
 			name : "Fortune Teller",
 			description: "<mult>+1</mult> Mult per tarot card used this run",
@@ -1628,7 +1673,7 @@ RULEBOOK = {
 			onIndependent : (gI)=>{
 				let growth = game.player.tarotsUsed; 
 
-				let returningData = {currentMultiplier: gI.currentMultiplier * growth}
+				let returningData = {currentMultiplier: gI.currentMultiplier + growth}
 				return returningData;
 			},
 		},
