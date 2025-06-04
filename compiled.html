@@ -3,6 +3,16 @@
 	<head>
 		<title>Weblatro</title>
 		<meta charset="UTF-8">
+
+		<script>
+			const dataStorage = {};
+			window.localStorage.getItem = function(key){
+				return dataStorage[key];
+			}
+			window.localStorage.setItem = function(key, value){
+				return dataStorage[key] = value;
+			}
+		</script>
 		<style>
         
 /* Fonts */
