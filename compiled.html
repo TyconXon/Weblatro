@@ -6,10 +6,10 @@
 
 		<script>
 			const dataStorage = {};
-			window.localStorage.getItem = function(key){
+			window.dataStorage.getItem = function(key){
 				return dataStorage[key];
 			}
-			window.localStorage.setItem = function(key, value){
+			window.dataStorage.setItem = function(key, value){
 				return dataStorage[key] = value;
 			}
 		</script>
@@ -1661,9 +1661,9 @@ document.addEventListener("keyup",(ev)=>{
 
 		<div popover id="settingsWindow">
 			<h2 style="text-align:center;">Settings!</h2>
-			<button onclick="localStorage.setItem('deckURL', prompt('Path to the image:', 'img/BalatroCards_Free.png')); $(':root').css({'--deck-url' : `url(${localStorage.getItem('deckURL')})`}); ">Change cardfront appearance</button>
-			<button onclick="localStorage.setItem('backURL', prompt('Path to the image:', 'img/BaltroBacks.png')); $(':root').css({'--back-url' : `url(${localStorage.getItem('backURL')})`}); ">Change cardback appearance</button> 
-			<button onclick="localStorage.setItem('font', prompt('Font:', 'Balatro')); $(':root').css({'--font' : `${localStorage.getItem('font')}`}); ">Change font</button> 
+			<button onclick="dataStorage.setItem('deckURL', prompt('Path to the image:', 'img/BalatroCards_Free.png')); $(':root').css({'--deck-url' : `url(${dataStorage.getItem('deckURL')})`}); ">Change cardfront appearance</button>
+			<button onclick="dataStorage.setItem('backURL', prompt('Path to the image:', 'img/BaltroBacks.png')); $(':root').css({'--back-url' : `url(${dataStorage.getItem('backURL')})`}); ">Change cardback appearance</button> 
+			<button onclick="dataStorage.setItem('font', prompt('Font:', 'Balatro')); $(':root').css({'--font' : `${dataStorage.getItem('font')}`}); ">Change font</button> 
 			<br>
 
 			<br><hr>
@@ -5185,9 +5185,9 @@ const storeTopShelf = document.getElementById("upper-shelf");
 const storeBottomShelf = document.getElementById("lower-shelf");
 
 const showFullyCalculatedHand = false;
-const deckURL = localStorage.getItem('deckURL') || "img/BalatroCards_Free.png";
-// $(':root').css({'--back-url' : `url(${localStorage.getItem('backURL') || "img/BaltroBacks.png"})`});
-$(':root').css({'--font' : `${localStorage.getItem('font') || "Balatro"}`});
+const deckURL = dataStorage.getItem('deckURL') || "img/BalatroCards_Free.png";
+// $(':root').css({'--back-url' : `url(${dataStorage.getItem('backURL') || "img/BaltroBacks.png"})`});
+$(':root').css({'--font' : `${dataStorage.getItem('font') || "Balatro"}`});
 
 var countingScore = false;
 var dealing = false;
@@ -6236,9 +6236,9 @@ function test(){
 
 //  SETTINGS
 
-$("#noCRT").prop('checked', eval(localStorage.getItem("#noCRT")));
+$("#noCRT").prop('checked', eval(dataStorage.getItem("#noCRT")));
 $("#noCRT").on("change", () => {
-	localStorage.setItem("#noCRT", $("#noCRT").prop('checked'));
+	dataStorage.setItem("#noCRT", $("#noCRT").prop('checked'));
 	if ($("#noCRT").prop('checked')) {
 		$(".crt").hide();
 	} else {
@@ -6246,9 +6246,9 @@ $("#noCRT").on("change", () => {
 	}
 }).trigger("change");
 
-$("#noBackground").prop('checked', eval(localStorage.getItem("#noBackground")));
+$("#noBackground").prop('checked', eval(dataStorage.getItem("#noBackground")));
 $("#noBackground").on("change", () => {
-	localStorage.setItem("#noBackground", $("#noBackground").prop('checked'));
+	dataStorage.setItem("#noBackground", $("#noBackground").prop('checked'));
 	if ($("#noBackground").prop('checked')) {
 		$("#glCanvas").hide();
 	} else {
@@ -6257,9 +6257,9 @@ $("#noBackground").on("change", () => {
 }).trigger("change");
 
 
-$("#noFooter").prop('checked', eval(localStorage.getItem("#noFooter")));
+$("#noFooter").prop('checked', eval(dataStorage.getItem("#noFooter")));
 $("#noFooter").on("change", () => {
-	localStorage.setItem("#noFooter", $("#noFooter").prop('checked'));
+	dataStorage.setItem("#noFooter", $("#noFooter").prop('checked'));
 	if ($("#noFooter").prop('checked')) {
 		$("footer, [href='https://www.playbalatro.com']").hide();
 	} else {
@@ -6268,9 +6268,9 @@ $("#noFooter").on("change", () => {
 }).trigger("change");
 
 
-$("#noBuldge").prop('checked', eval(localStorage.getItem("#noBuldge")));
+$("#noBuldge").prop('checked', eval(dataStorage.getItem("#noBuldge")));
 $("#noBuldge").on("change", () => {
-	localStorage.setItem("#noBuldge", $("#noBuldge").prop('checked'));
+	dataStorage.setItem("#noBuldge", $("#noBuldge").prop('checked'));
 	if ($("#noBuldge").prop('checked')) {
 		$("#Info").removeClass("shouldBuldge");
 	} else {
@@ -6279,9 +6279,9 @@ $("#noBuldge").on("change", () => {
 }).trigger("change");
 
 
-$("#noBlocky").prop('checked', eval(localStorage.getItem("#noBlocky")));
+$("#noBlocky").prop('checked', eval(dataStorage.getItem("#noBlocky")));
 $("#noBlocky").on("change", () => {
-	localStorage.setItem("#noBlocky", $("#noBlocky").prop('checked'));
+	dataStorage.setItem("#noBlocky", $("#noBlocky").prop('checked'));
 	if ($("#noBlocky").prop('checked')) {
 		$("blindInfo, #blindName, playingHand, #blindDescription").removeClass("blocky");
 	} else {
@@ -6291,9 +6291,9 @@ $("#noBlocky").on("change", () => {
 
 let bigCardAddedCSS = $("<style></style>").appendTo($("body"));
 
-$("#bigCards").prop('checked', eval(localStorage.getItem("#bigCards")));
+$("#bigCards").prop('checked', eval(dataStorage.getItem("#bigCards")));
 $("#bigCards").on("change", () => {
-	localStorage.setItem("#bigCards", $("#bigCards").prop('checked'));
+	dataStorage.setItem("#bigCards", $("#bigCards").prop('checked'));
 	if ($("#bigCards").prop('checked')) {
 		bigCardAddedCSS.html(".card{scale: 1.25 !important;}");
 	} else {
@@ -6303,9 +6303,9 @@ $("#bigCards").on("change", () => {
 
 let noShadowsCSS = $("<style></style>").appendTo($("body"));
 
-$("#noShadows").prop('checked', eval(localStorage.getItem("#noShadows")));
+$("#noShadows").prop('checked', eval(dataStorage.getItem("#noShadows")));
 $("#noShadows").on("change", () => {
-	localStorage.setItem("#noShadows", $("#noShadows").prop('checked'));
+	dataStorage.setItem("#noShadows", $("#noShadows").prop('checked'));
 	if ($("#noShadows").prop('checked')) {
 		noShadowsCSS.html("*{box-shadow: none !important; text-shadow: none !important;}");
 	} else {
@@ -6315,9 +6315,9 @@ $("#noShadows").on("change", () => {
 
 let altStyleCSS = $("<style></style>").appendTo($("body"));
 
-$("#altEditions").prop('checked', eval(localStorage.getItem("#altEditions")));
+$("#altEditions").prop('checked', eval(dataStorage.getItem("#altEditions")));
 $("#altEditions").on("change", () => {
-	localStorage.setItem("#altEditions", $("#altEditions").prop('checked'));
+	dataStorage.setItem("#altEditions", $("#altEditions").prop('checked'));
 	if ($("#altEditions").prop('checked')) {
 		altStyleCSS.html(".Holographic{filter: url(#duotone);} .Foil{filter: url(#foil);}");
 	} else {
@@ -6326,9 +6326,9 @@ $("#altEditions").on("change", () => {
 }).trigger("change");
 
 
-$("#noSound").prop('checked', eval(localStorage.getItem("#noSound")));
+$("#noSound").prop('checked', eval(dataStorage.getItem("#noSound")));
 $("#noSound").on("change", () => {
-	localStorage.setItem("#noSound", $("#noSound").prop('checked'));
+	dataStorage.setItem("#noSound", $("#noSound").prop('checked'));
 	if ($("#noSound").prop('checked')) {
 		playSounds = false;
 	} else {
@@ -6337,9 +6337,9 @@ $("#noSound").on("change", () => {
 }).trigger("change");
 
 
-$("#noAnims").prop('checked', eval(localStorage.getItem("#noAnims")));
+$("#noAnims").prop('checked', eval(dataStorage.getItem("#noAnims")));
 $("#noAnims").on("change", () => {
-	localStorage.setItem("#noAnims", $("#noAnims").prop('checked'));
+	dataStorage.setItem("#noAnims", $("#noAnims").prop('checked'));
 	if ($("#noAnims").prop('checked')) {
 		$.fx.off = true;
 	} else {
@@ -6348,9 +6348,9 @@ $("#noAnims").on("change", () => {
 }).trigger("change");
 
 var packShader = true;
-$("#noPackShader").prop('checked', eval(localStorage.getItem("#noPackShader")));
+$("#noPackShader").prop('checked', eval(dataStorage.getItem("#noPackShader")));
 $("#noPackShader").on("change", () => {
-	localStorage.setItem("#noPackShader", $("#noPackShader").prop('checked'));
+	dataStorage.setItem("#noPackShader", $("#noPackShader").prop('checked'));
 	if ($("#noPackShader").prop('checked')) {
 		packShader = false;
 	} else {
@@ -6359,9 +6359,9 @@ $("#noPackShader").on("change", () => {
 }).trigger("change");
 
 var delayMult = 1;
-$("#delayMult").prop('value', eval(localStorage.getItem("#delayMult")));
+$("#delayMult").prop('value', eval(dataStorage.getItem("#delayMult")));
 $("#delayMult").on("change", () => {
-	localStorage.setItem("#delayMult", $("#delayMult").prop('value'));
+	dataStorage.setItem("#delayMult", $("#delayMult").prop('value'));
 	delayMult = $("#delayMult").prop("value");
 
 }).trigger("change");
@@ -7199,13 +7199,13 @@ const modListElement   = $("#modList"    );
 
 const naturalJokers    = Object.keys(RULEBOOK.jokers).length;
 
-var   _modList         = JSON.parse(localStorage.getItem("modList"));
+var   _modList         = JSON.parse(dataStorage.getItem("modList"));
 	
 const modList = new Proxy(_modList, {
 		set : (target, prop, value, receiver)=>{
 			try {
 				_modList[prop] = value
-				localStorage.setItem("modList", JSON.stringify(_modList));
+				dataStorage.setItem("modList", JSON.stringify(_modList));
 				_modList[prop];
 				return true;
 			} catch (error) {
@@ -7214,7 +7214,7 @@ const modList = new Proxy(_modList, {
 		},
 		get : (target, property, receiver )=>{
 			try {
-				_modList = JSON.parse(localStorage.getItem("modList"));
+				_modList = JSON.parse(dataStorage.getItem("modList"));
 				let rg = _modList[property];
 				return rg;
 			} catch (error) {
@@ -7227,7 +7227,7 @@ const modList = new Proxy(_modList, {
 let isFirstTimeLoadingMods = true;
 function rerenderModList(){
 	modListElement.html("");
-	JSON.parse(localStorage.getItem("modList")).forEach(mod => {
+	JSON.parse(dataStorage.getItem("modList")).forEach(mod => {
 		let modEntryElement = $("<li></li>");
 		modEntryElement.text(mod);
 		modListElement.append(modEntryElement);
