@@ -6,10 +6,10 @@
 
 		<script>
 			const dataStorage = {};
-			window.dataStorage.getItem = function(key){
+			dataStorage.getItem = function(key){
 				return dataStorage[key];
 			}
-			window.dataStorage.setItem = function(key, value){
+			dataStorage.setItem = function(key, value){
 				return dataStorage[key] = value;
 			}
 		</script>
